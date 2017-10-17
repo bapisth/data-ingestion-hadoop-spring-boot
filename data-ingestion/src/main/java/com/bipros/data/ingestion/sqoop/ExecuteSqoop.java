@@ -12,6 +12,7 @@ public class ExecuteSqoop extends Configured {
 
 	private static SqoopOptions SqoopOptions = null;
 	private SqoopOptionsData optionsData;
+	private static String splitByColumn = "";
 
 	static {
 		SqoopOptions = new SqoopOptions();
@@ -35,6 +36,10 @@ public class ExecuteSqoop extends Configured {
 
 	private void TransferringEntireTable(String table) {
 		SqoopOptions.setTableName(table);
+		
+		if(splitByColumn != "") {
+			SqoopOptions.setSplitByCol(splitByColumn);
+		}
 	}
 
 	private void TansferringEntireTableSpecificDir(String table, String directory) {
@@ -84,6 +89,12 @@ public class ExecuteSqoop extends Configured {
 		SqoopOptions.setHivePartitionValue(partitionValue);
 	}
 
+	/**
+	 * Not Yet Implemented
+	 * 
+	 * @param optionsData
+	 * @return
+	 */
 	public String runSqoopHdfsTool(SqoopOptionsData optionsData) {
 		this.optionsData = optionsData;
 
@@ -96,26 +107,33 @@ public class ExecuteSqoop extends Configured {
 	}
 
 	public String runSqoopHiveTool(SqoopOptionsData optionsData) {
-
-		synchronized (ExecuteSqoop.class) {
-			this.optionsData = optionsData;
-
-			// initialize
-			init();
-
-			// Create Sqoop Options
-			TransferringEntireTableSpecificDirHive(optionsData.getTableName(),
-					"result/data/" + UUID.randomUUID().toString());
-
-			// Runt the Sqoop Command using above built-in options
-			int runIt = runIt();
-
-			return runIt == 0 ? "success" : "failure";
-
-		}
-
+		return execute(optionsData);
 	}
 
+	/**
+	 * Hive --split-by options added, It should be added when there is no primary
+	 * key in the table
+	 * 
+	 * @param optionsData
+	 * @param splitByColumn
+	 * @return
+	 */
+	public String runSqoopHiveTool(SqoopOptionsData optionsData, String splitByColumn) {
+
+		if (splitByColumn != null || splitByColumn == "") {
+			return null;
+		} else {
+			ExecuteSqoop.splitByColumn = splitByColumn;
+		}
+		return execute(optionsData);
+	}
+
+	/**
+	 * Not Yet Implemented
+	 * 
+	 * @param optionsData
+	 * @return
+	 */
 	public String runSqoopHiveWithParttionTool(SqoopOptionsData optionsData) {
 		this.optionsData = optionsData;
 		// setup
@@ -123,6 +141,24 @@ public class ExecuteSqoop extends Configured {
 
 		return null;
 
+	}
+
+	/**
+	 * Executes Sqoop commands
+	 * @param optionsData
+	 * @return
+	 */
+	private String execute(SqoopOptionsData optionsData) {
+		synchronized (ExecuteSqoop.class) {
+			this.optionsData = optionsData;
+			// initialize
+			init();
+			// Create Sqoop Options
+			TransferringEntireTableSpecificDirHive(optionsData.getTableName(), "result/data/" + UUID.randomUUID().toString());
+			// Runt the Sqoop Command using above built-in options
+			int runIt = runIt();
+			return runIt == 0 ? "success" : "failure";
+		}
 	}
 
 }
