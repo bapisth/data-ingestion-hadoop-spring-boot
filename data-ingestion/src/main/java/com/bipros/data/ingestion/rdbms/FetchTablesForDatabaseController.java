@@ -17,10 +17,25 @@ public class FetchTablesForDatabaseController {
 
 	@Autowired
 	private RDBMSService rdbmsService;
+	
+	@PostMapping("/all-schemas")
+	public JSONArray getAllSchemas(@RequestBody ConnectionModel connectionModel) throws SQLException {
+		JSONArray tables = rdbmsService.getSchemasForConnection(connectionModel);
+		return tables;
+	}
 
 	@PostMapping("/all-tables")
 	public JSONArray getAllTables(@RequestBody ConnectionModel connectionModel) throws SQLException {
 		JSONArray tables = rdbmsService.getTablesForConnection(connectionModel);
 		return tables;
 	}
+	
+	
+	
+	@PostMapping("/all-table-columns")
+	public JSONArray getAllColumnsForTable(@RequestBody ConnectionModel connectionModel) throws SQLException {
+		JSONArray tables = rdbmsService.getTableAndColumnsForConnection(connectionModel);
+		return tables;
+	}
+	
 }

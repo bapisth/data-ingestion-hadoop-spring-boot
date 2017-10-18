@@ -56,15 +56,14 @@ public class SqoopUtility extends Configured {
 	}
 
 	private static void setUp() {
-		SqoopOptions.setConnectString(getConnectionstringpostgreSql());
 		//SqoopOptions.setConnectString(getConnectionstring());
-		//SqoopOptions.setConnectString(getConnectionstring());
+		SqoopOptions.setConnectString(getConnectionstringmysql());
+		SqoopOptions.setUsername(getDatabaseusername());
+		SqoopOptions.setPassword(getDatabasepassword());
 		
-		//SqoopOptions.setUsername(getDatabaseusername());
-		//SqoopOptions.setPassword(getDatabasepassword());
-		
-		SqoopOptions.setUsername(getDatabaseusernamepostgres());
-		SqoopOptions.setPassword(getDatabasepasswordpostgres());
+		//SqoopOptions.setConnectString(getConnectionstringpostgreSql());
+		//SqoopOptions.setUsername(getDatabaseusernamepostgres());
+		//SqoopOptions.setPassword(getDatabasepasswordpostgres());
 	}
 
 	private static int runIt() {
@@ -109,6 +108,15 @@ public class SqoopUtility extends Configured {
 	private static void incrementalImport(String table, String directory, IncrementalMode mode, String checkColumn,
 			String lastVale) {
 		TansferringEntireTableSpecificDir(table, directory);
+		SqoopOptions.setIncrementalMode(mode);
+		SqoopOptions.setAppendMode(true);
+		SqoopOptions.setIncrementalTestColumn(checkColumn);
+		SqoopOptions.setIncrementalLastValue(lastVale);
+	}
+	
+	private static void incrementalImportToHive(String table, String directory, IncrementalMode mode, String checkColumn,
+			String lastVale) {
+		TransferringEntireTableSpecificDirHive(table, directory);
 		SqoopOptions.setIncrementalMode(mode);
 		SqoopOptions.setAppendMode(true);
 		SqoopOptions.setIncrementalTestColumn(checkColumn);
@@ -264,7 +272,11 @@ public class SqoopUtility extends Configured {
 		 setUp(); 
 		 String tableName = "employee";
 		 String tableNameInPosGresql = "act_hi_detail";
-		 TransferringEntireTableSpecificDirHive(tableNameInPosGresql,"result/data/"+ UUID.randomUUID().toString()); 
+		 //TransferringEntireTableSpecificDirHive(tableNameInPosGresql,"result/data/"+ UUID.randomUUID().toString());
+		 
+		 //IncrementalMode mode, String checkColumn, String lastVale
+		 
+		 incrementalImportToHive(tableName,"test/result/data/"+ UUID.randomUUID().toString(), IncrementalMode.AppendRows, "id", "123");
 		 runIt();
 		 
 

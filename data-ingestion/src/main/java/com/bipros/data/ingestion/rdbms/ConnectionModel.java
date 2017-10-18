@@ -8,6 +8,7 @@ public class ConnectionModel {
 	private DATABASETYPE databaseType;
 	private String databaseUsername;
 	private String databasePassword;
+	private String tableName;
 	
 	public String getDatabaseName() {
 		return databaseName;
@@ -38,6 +39,12 @@ public class ConnectionModel {
 	}
 	public void setDatabaseType(DATABASETYPE databaseType) {
 		this.databaseType = databaseType;
+	}
+	public String getTableName() {
+		return tableName;
+	}
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
 	}
 
 }

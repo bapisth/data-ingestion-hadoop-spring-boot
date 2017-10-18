@@ -63,6 +63,12 @@ public class SqoopService {
 		String runSqoopHiveTool = executeSqoop.runSqoopHiveTool(sqoopOptionsData);
 		return runSqoopHiveTool;
 	}
+	
+	public String importToHiveWithSplittedColumn() {
+		ExecuteSqoop executeSqoop = new ExecuteSqoop();
+		String runSqoopHiveTool = executeSqoop.runSqoopHiveToolWithSplittedColumn(sqoopOptionsData);
+		return runSqoopHiveTool;
+	}
 
 	public String importToHiveWithPartition() {
 		return null;

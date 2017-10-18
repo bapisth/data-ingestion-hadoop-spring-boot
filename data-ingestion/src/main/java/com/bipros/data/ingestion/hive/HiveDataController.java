@@ -3,6 +3,7 @@ package com.bipros.data.ingestion.hive;
 import java.sql.SQLException;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/hive")
 @CrossOrigin
 public class HiveDataController {
-	
+
 	@GetMapping("/all-tables")
 	private Object getDefaultTables() {
 		try {
@@ -23,11 +24,16 @@ public class HiveDataController {
 		}
 		return null;
 	}
-	
+
 	@GetMapping("/{tableName}")
 	private Object getDataForTable(@PathVariable("tableName") String tableName) {
 		JSONArray tableRows = HiveDataSourceConnection.getData(tableName);
 		return tableRows;
+	}
+	
+	@GetMapping("/check-table/{tableName}")
+	private boolean checkTablePresent(@PathVariable("tableName") String tableName) throws SQLException {
+		return HiveDataSourceConnection.checkTablePresent(tableName);
 	}
 
 }

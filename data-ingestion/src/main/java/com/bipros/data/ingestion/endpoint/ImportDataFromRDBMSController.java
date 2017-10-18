@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bipros.data.ingestion.sqoop.HdfsImportCommand;
 import com.bipros.data.ingestion.sqoop.HiveImportCommand;
 import com.bipros.data.ingestion.sqoop.HiveImportWithPartitionCommand;
+import com.bipros.data.ingestion.sqoop.HiveImportWithSplittedColumnCommand;
 import com.bipros.data.ingestion.sqoop.SqoopCommandExecutor;
 import com.bipros.data.ingestion.sqoop.SqoopOptionsData;
 import com.bipros.data.ingestion.sqoop.SqoopService;
@@ -27,6 +28,7 @@ public class ImportDataFromRDBMSController {
 	private HdfsImportCommand hdfsImportCommand;
 	private HiveImportCommand hiveImportCommand;
 	private HiveImportWithPartitionCommand hiveImportWithPartiionCommand;
+	private HiveImportWithSplittedColumnCommand hiveImportWithSplittedColumnCommand;
 
 	// other datas
 	boolean hiveImport = false;
@@ -34,11 +36,8 @@ public class ImportDataFromRDBMSController {
 
 	@PostMapping(value = "/to-hdfs")
 	public String importDataFromRDBMSToHDFS(@RequestBody SqoopOptionsData sqoopOptionsData) {
-
-		// Set the data to SqoopService
 		SqoopService sqoopService = new SqoopService(sqoopOptionsData);
 
-		// Start Execution
 		hdfsImportCommand = new HdfsImportCommand(sqoopService);
 		commandExecutor.setSqoopCommand(hdfsImportCommand);
 		Object hdfsImportResult = commandExecutor.startExecution();
@@ -50,11 +49,8 @@ public class ImportDataFromRDBMSController {
 	public JSONObject importDataFromRDBMSToHive(@RequestBody SqoopOptionsData sqoopOptionsData) {
 		
 		JSONObject responseObject = new JSONObject();
-
-		// Set the data to SqoopService
 		SqoopService sqoopService = new SqoopService(sqoopOptionsData);
 
-		// Start Execution
 		hiveImportCommand = new HiveImportCommand(sqoopService);
 		commandExecutor.setSqoopCommand(hiveImportCommand);
 		Object hdfsImportResult = commandExecutor.startExecution();
@@ -64,14 +60,25 @@ public class ImportDataFromRDBMSController {
 		return responseObject;
 				
 	}
+	
+	@PostMapping(value = "/to-hive-with-split-column")
+	public JSONObject importDataFromRDBMSToHiveWithSplittedColumn(@RequestBody SqoopOptionsData sqoopOptionsData) {
+		
+		JSONObject responseObject = new JSONObject();
+		SqoopService sqoopService = new SqoopService(sqoopOptionsData);
+		hiveImportWithSplittedColumnCommand = new HiveImportWithSplittedColumnCommand(sqoopService);
+		
+		commandExecutor.setSqoopCommand(hiveImportWithSplittedColumnCommand);
+		Object hdfsImportResult = commandExecutor.startExecution();
+		responseObject.put("response", String.valueOf(hdfsImportResult));
+		return responseObject;
+				
+	}
 
 	@PostMapping(value = "/to-hive-with-partition")
 	public String importDataFromRDBMSToHiveWithParttion(@RequestBody SqoopOptionsData sqoopOptionsData) {
-
-		// Set the data to SqoopService
 		SqoopService sqoopService = new SqoopService(sqoopOptionsData);
 
-		// Start Execution
 		hiveImportWithPartiionCommand = new HiveImportWithPartitionCommand(sqoopService);
 		commandExecutor.setSqoopCommand(hiveImportWithPartiionCommand);
 		Object hdfsImportResult = commandExecutor.startExecution();

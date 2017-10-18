@@ -36,8 +36,8 @@ public class ExecuteSqoop extends Configured {
 
 	private void TransferringEntireTable(String table) {
 		SqoopOptions.setTableName(table);
-		
-		if(splitByColumn != "") {
+
+		if (splitByColumn != "") {
 			SqoopOptions.setSplitByCol(splitByColumn);
 		}
 	}
@@ -77,6 +77,15 @@ public class ExecuteSqoop extends Configured {
 		SqoopOptions.setIncrementalLastValue(lastVale);
 	}
 
+	private void incrementalImportToHive(String table, String directory, IncrementalMode mode, String checkColumn,
+			String lastVale) {
+		TransferringEntireTableSpecificDirHive(table, directory);
+		SqoopOptions.setIncrementalMode(mode);
+		SqoopOptions.setAppendMode(true);
+		SqoopOptions.setIncrementalTestColumn(checkColumn);
+		SqoopOptions.setIncrementalLastValue(lastVale);
+	}
+
 	private void TransferringEntireTableSpecificDirHive(String table, String directory) {
 		TansferringEntireTableSpecificDir(table, directory);
 		SqoopOptions.setHiveImport(true);
@@ -109,6 +118,10 @@ public class ExecuteSqoop extends Configured {
 	public String runSqoopHiveTool(SqoopOptionsData optionsData) {
 		return execute(optionsData);
 	}
+	
+	public String runSqoopHiveToolWithSplittedColumn(SqoopOptionsData optionsData) {
+		return executeIncrementally(optionsData);
+	}
 
 	/**
 	 * Hive --split-by options added, It should be added when there is no primary
@@ -138,13 +151,13 @@ public class ExecuteSqoop extends Configured {
 		this.optionsData = optionsData;
 		// setup
 		init();
-
 		return null;
 
 	}
 
 	/**
 	 * Executes Sqoop commands
+	 * 
 	 * @param optionsData
 	 * @return
 	 */
@@ -154,8 +167,29 @@ public class ExecuteSqoop extends Configured {
 			// initialize
 			init();
 			// Create Sqoop Options
-			TransferringEntireTableSpecificDirHive(optionsData.getTableName(), "result/data/" + UUID.randomUUID().toString());
+			TransferringEntireTableSpecificDirHive(optionsData.getTableName(),
+					"result/data/" + UUID.randomUUID().toString());
 			// Runt the Sqoop Command using above built-in options
+			int runIt = runIt();
+			return runIt == 0 ? "success" : "failure";
+		}
+	}
+
+	/**
+	 * Executes Sqoop commands that will take data incrementally
+	 * 
+	 * @param optionsData
+	 * @return
+	 */
+	private String executeIncrementally(SqoopOptionsData optionsData) {
+		synchronized (ExecuteSqoop.class) {
+			this.optionsData = optionsData;
+			init();
+			
+			incrementalImportToHive(optionsData.getTableName(), "result/data/" + UUID.randomUUID().toString(),
+					IncrementalMode.AppendRows, optionsData.getSplitByColumn(),
+					optionsData.getLastSplittedColumnValue());
+	
 			int runIt = runIt();
 			return runIt == 0 ? "success" : "failure";
 		}

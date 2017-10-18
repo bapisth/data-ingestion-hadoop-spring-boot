@@ -8,6 +8,8 @@ public class SqoopOptionsData {
 	private String tableName;
 	private boolean hiveImport = false;
 	private boolean hiveImportWithPartition = false;
+	private String splitByColumn;
+	private String lastSplittedColumnValue;
 
 	private SqoopOptionsData() {
 	}
@@ -18,6 +20,8 @@ public class SqoopOptionsData {
 		this.password = builder.password;
 		this.hiveImport = builder.hiveImport;
 		this.hiveImportWithPartition = builder.hiveImportWithPartition;
+		this.splitByColumn = builder.splitByColumn;
+		this.lastSplittedColumnValue = builder.lastValueOfSplittedColumn;
 	}
 
 	public String getDatabaseName() {
@@ -48,6 +52,14 @@ public class SqoopOptionsData {
 		return hiveImportWithPartition;
 	}
 
+	public String getSplitByColumn() {
+		return splitByColumn;
+	}
+
+	public String getLastSplittedColumnValue() {
+		return lastSplittedColumnValue;
+	}
+
 	public static class Builder {
 		private String connectionString;
 		private String userName;
@@ -57,6 +69,8 @@ public class SqoopOptionsData {
 		private String databaseType;
 		private boolean hiveImport = false;
 		private boolean hiveImportWithPartition = false;
+		private String splitByColumn;
+		private String lastValueOfSplittedColumn;
 
 		public Builder setDatabaseName(String databaseName) {
 			this.databaseName = databaseName;
@@ -90,6 +104,21 @@ public class SqoopOptionsData {
 
 		public Builder setHiveImportWithPartition(boolean hiveImportWithPartition) {
 			this.hiveImportWithPartition = hiveImportWithPartition;
+			return this;
+		}
+
+		public Builder setDatabaseType(String databaseType) {
+			this.databaseType = databaseType;
+			return this;
+		}
+
+		public Builder setSplitByColumn(String splitByColumn) {
+			this.splitByColumn = splitByColumn;
+			return this;
+		}
+
+		public Builder setLastSplittedColumnValue(String lastValueOfSplittedColumn) {
+			this.lastValueOfSplittedColumn = lastValueOfSplittedColumn;
 			return this;
 		}
 

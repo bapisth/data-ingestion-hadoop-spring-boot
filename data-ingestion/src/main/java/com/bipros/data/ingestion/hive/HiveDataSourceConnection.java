@@ -19,6 +19,7 @@ public class HiveDataSourceConnection {
 	private static final String USERNAME = "APP";
 	private static final String PASSWORD = "mine";
 	private static final String SQL_SHOW_TABLES = "show tables";
+	private static final String SQL_SHOW_TABLES_WITH_TABLE_NAME = "show tables '%s'";
 
 	private static Connection getConnection() throws SQLException {
 
@@ -91,6 +92,24 @@ public class HiveDataSourceConnection {
 		}
 
 		return jsonArray;
+	}
+	
+	public static boolean checkTablePresent(String tableName) throws SQLException {
+		boolean tablePresentInHive = false;
+		try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
+			String format = String.format(SQL_SHOW_TABLES_WITH_TABLE_NAME, tableName);
+			ResultSet resultSet = statement.executeQuery(format);
+			while (resultSet.next()) {
+				tablePresentInHive = true;
+				break;
+			}
+			
+			if(tablePresentInHive) {
+				//select last column value
+			}
+		}
+		
+		return tablePresentInHive;
 	}
 
 	public static void main(String[] args) throws SQLException {
